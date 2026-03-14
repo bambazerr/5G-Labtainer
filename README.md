@@ -6,7 +6,7 @@ Basic Open5GS deployment.
 ## 5g-lab-edge-slicing : 
 Edge slicing with dual UPF architecture.
 
-C'est deux lab different, donc il faut utilisé l'un des dossier pour reprendre un lab sur labtainer.
+C'est deux lab different, donc il faut utiliser l'un des dossier pour reprendre un lab sur labtainer.
 
 A déplacer sur cd ~/labtainer/trunk/labs/
 
