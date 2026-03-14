@@ -1,5 +1,15 @@
 # 5G-labtainer_AMICMA5G
 
+## 5g-lab : 5G network Deployment
+Basic Open5GS deployment.
+
+## 5g-lab-edge-slicing : 
+Edge slicing with dual UPF architecture.
+
+C'est deux lab different, donc il faut utilisé l'un des dossier pour reprendre un lab sur labtainer.
+
+A déplacer sur cd ~/labtainer/trunk/labs/
+
 # Documentation Technique : Déploiement du TP 5G (Open5GS + UERANSIM) sur Labtainer
 
 # 1. Vue d’ensemble : Comment le TP est rendu possible ?
