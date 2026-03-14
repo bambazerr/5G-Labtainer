@@ -1,0 +1,31 @@
+db_uri: mongodb://100.0.0.2/open5gs
+
+sbi:
+    server:
+      no_tls: true
+    client:
+      no_tls: true
+
+logger:
+    file: /open5gs/install/var/log/open5gs/udr.log
+
+parameter:
+
+udr:
+    sbi:
+      - addr: 100.0.0.14
+        port: 7777
+
+scp:
+    sbi:
+      - addr:
+          - 100.0.0.35
+        port: 7777
+
+nrf:
+    sbi:
+      - addr:
+          - 100.0.0.12
+        port: 7777
+
+

@@ -1,0 +1,5 @@
+#!/bin/bash
+sudo nohup /ueransim/bin/nr-ue -c /ueransim/config/open5gs-ue.yaml &
+sleep 3
+sudo route add -net default gw `ip -4 -br a | grep uesimtun | tr -s " " | tr "/" " "| cut -d " " -f3`
+

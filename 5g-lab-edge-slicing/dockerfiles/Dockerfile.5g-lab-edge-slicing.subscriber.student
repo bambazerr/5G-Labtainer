@@ -1,0 +1,129 @@
+#
+# Labtainer Dockerfile
+#
+#  This is the default Labtainer Dockerfile template, plesae choose the appropriate
+#  base image below.
+#
+# The labtainer.base image includes the following packages:
+#    build-essential  expect  file  gcc-multilib  gdb  iputils-ping  less  man  manpages-dev 
+#    net-tools  openssh-client  python  sudo  tcl8.6  vim  zip  hexedit  rsyslog
+#
+# The labtainer.network image adds the following packages:
+#   openssl openssh-server openvpn wget tcpdump  update-inetd  xinetd
+#
+ARG registry
+FROM $registry/labtainer.base2
+#FROM $registry/labtainer.firefox
+#FROM $registry/labtainer.network
+#FROM $registry/labtainer.centos
+#FROM $registry/labtainer.lamp
+#
+#  lab is the fully qualified image name, e.g., mylab.some_container.student
+#  labdir is the name of the lab, e.g., mylab 
+#  imagedir is the name of the container
+#  user_name is the USER from the start.config, if other than ubuntu,
+#            then that user must be added in this dockerfile
+#            before the USER command
+#
+ARG lab
+ARG labdir
+ARG imagedir
+ARG user_name
+ARG password
+ARG apt_source
+ARG version
+LABEL version=$version
+ENV APT_SOURCE $apt_source
+RUN /usr/bin/apt-source.sh
+#
+#  put package installation here, e.g.,
+#     RUN apt-get update && apt-get install -y --no-install-recommends somepackage
+#
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	libtalloc-dev \
+	libtalloc-dev \
+	libyaml-dev \
+	libmicrohttpd-dev \
+	libnghttp2-dev \
+	libcurl4-gnutls-dev \
+	libsctp-dev \
+	libidn11-dev \
+	libtins-dev \
+	libmongoc-dev \
+	iproute2 \
+	iptables
+
+
+# Installer Node.js 20.x
+RUN apt-get update && \
+	apt-get install -y gpg curl && \
+	mkdir -p /etc/apt/keyrings && \
+	curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
+	echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list && \
+	apt-get update && \
+	apt-get install -y nodejs
+
+
+#instal mongod	
+RUN mkdir -p /etc/apt/keyrings && \
+	curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc | gpg --dearmor -o /etc/apt/keyrings/mongodb.gpg && \
+        echo "deb [ signed-by=/etc/apt/keyrings/mongodb.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" \
+        | tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+        
+RUN apt-get update && apt-get install -y mongodb-org
+
+RUN /usr/bin/apt-source.sh
+RUN apt-get update && apt-get install -y firefox
+
+#
+# Install the system files found in the _system directory
+#
+ADD $labdir/$imagedir/sys_tar/sys.tar /
+ADD $labdir/sys_$lab.tar.gz /
+#
+RUN useradd -ms /bin/bash $user_name
+RUN echo "$user_name:$password" | chpasswd
+RUN adduser $user_name sudo
+# replace above with below for centos/fedora
+#RUN usermod $user_name -a -G wheel
+
+
+
+# Installer Prometheus
+RUN apt-get update && apt-get install -y wget tar \
+    && wget https://github.com/prometheus/prometheus/releases/download/v2.48.0/prometheus-2.48.0.linux-amd64.tar.gz \
+    && tar xvf prometheus-2.48.0.linux-amd64.tar.gz \
+    && mv prometheus-2.48.0.linux-amd64 /opt/prometheus \
+    && ln -s /opt/prometheus/prometheus /usr/local/bin/prometheus \
+    && ln -s /opt/prometheus/promtool /usr/local/bin/promtool
+
+# Installer Grafana
+RUN apt-get install -y software-properties-common adduser libfontconfig1 \
+    && wget -q -O - https://packages.grafana.com/gpg.key | apt-key add - \
+    && add-apt-repository "deb https://packages.grafana.com/oss/deb stable main" \
+    && apt-get update \
+    && apt-get install -y grafana
+
+
+#  **** Perform all root operations, e.g.,           ****
+#  **** "apt-get install" prior to the USER command. ****
+#
+USER $user_name
+ENV HOME /home/$user_name
+#
+# Install files in the user home directory
+#
+ADD $labdir/$imagedir/home_tar/home.tar $HOME
+# remove after docker fixes problem with empty tars
+RUN rm -f $HOME/home.tar
+ADD $labdir/$lab.tar.gz $HOME
+#
+#  The first thing that executes on the container.
+#
+# Copier init.js dans le container
+ADD _system/root/init.js /root/init.js
+
+USER root
+CMD ["/bin/bash", "-c", "exec /sbin/init --log-target=journal 3>&1"]
+
+

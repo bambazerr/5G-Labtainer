@@ -1,0 +1,26 @@
+logger:
+    file: /open5gs/install/var/log/open5gs/upf2.log
+
+parameter:
+
+upf:
+    pfcp:
+      - addr: 100.0.0.90
+    gtpu:
+      - addr: 100.0.0.90
+        advertise: 100.0.0.90
+    subnet:
+      - addr: 10.0.101.0/24 #192.168.104.1/24
+        dev: ogstun
+        dnn: edge
+      - addr: 2001:230:fafe::1/48
+        dev: ogstun
+        dnn: edge
+    metrics:
+      - addr: 100.0.0.90
+        port: 9091
+
+smf:
+    pfcp:
+      - addr: 100.0.0.100
+        dnn: edge

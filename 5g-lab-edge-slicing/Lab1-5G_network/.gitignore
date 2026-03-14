@@ -1,0 +1,5 @@
+*.tar
+*.log
+*.swp
+__pycache__/
+sys_tar/sys.tar

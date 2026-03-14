@@ -1,0 +1,28 @@
+logger:
+    file: /open5gs/install/var/log/open5gs/upf1.log
+
+parameter:
+
+upf:
+    pfcp:
+      - addr: 100.0.0.8
+    gtpu:
+      - addr: 100.0.0.8
+        advertise: 100.0.0.8
+    subnet:
+      - addr: 10.0.100.1/24
+        dev: ogstun
+        dnn: cloud
+      - addr: 2001:230:cafe::1/48
+        dev: ogstun
+        dnn: cloud
+    metrics:
+      - addr: 100.0.0.8
+        port: 9091
+
+smf:
+    pfcp:
+      - addr: 100.0.0.7
+        dnn: cloud
+
+

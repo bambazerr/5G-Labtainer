@@ -1,0 +1,40 @@
+logger:
+    file: /open5gs/install/var/log/open5gs/nssf.log
+
+sbi:
+    server:
+      no_tls: true
+    client:
+      no_tls: true
+
+parameter:
+
+nssf:
+    sbi:
+      - addr: 100.0.0.28
+        port: 7777
+    nsi:
+      - addr: 100.0.0.12
+        port: 7777
+        s_nssai:
+          sst: 1
+          sd: 000001
+      - addr: 100.0.0.12
+        port: 7777
+        s_nssai:
+          sst: 1
+          sd: 000002
+
+scp:
+    sbi:
+      - addr:
+          - 100.0.0.35
+        port: 7777
+
+nrf:
+    sbi:
+      - addr:
+          - 100.0.0.12
+        port: 7777
+
+

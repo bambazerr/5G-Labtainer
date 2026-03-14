@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Ne s'applique qu'aux shells interactifs
+[[ $- != *i* ]] && return
+
+HOST=$(hostname)
+
+case "$HOST" in
+    upf1|smf1)
+        GROUP="CLOUD"
+        COLOR="\033[1;34m"   # bleu
+        ;;
+    upf2|smf2|edge_server)
+        GROUP="EDGE"
+        COLOR="\033[1;32m"   # vert
+        ;;
+    gnb|ue1|ue2)
+        GROUP="RAN"
+        COLOR="\033[1;31m"   # rouge
+        ;;
+    subscriber)
+        GROUP="SUBSCRIBER"
+        COLOR="\033[1;36m"   # cyan
+        ;;
+    *)
+        GROUP="LAB"
+        COLOR="\033[1;37m"
+        ;;
+esac
+
+# Titre fenêtre
+echo -ne "\033]0;${GROUP} - ${HOST}\007"
+
+# Clear uniquement au premier lancement
+clear
+
+# Bannière
+echo "======================================================================================================"
+printf "                                      %s TERMINAL\n" "$GROUP"
+echo "======================================================================================================"
+echo ""
+
+# Prompt avec couleurs correctes
+PS1="\[${COLOR}\]${GROUP} | \u@\h:\w\$ \[\033[0m\]"
