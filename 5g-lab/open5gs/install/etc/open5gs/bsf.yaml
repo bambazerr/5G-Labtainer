@@ -1,0 +1,26 @@
+db_uri: mongodb://172.22.0.2/open5gs
+
+logger:
+    file:
+      path: /open5gs/install/var/log/open5gs/bsf.log
+
+sbi:
+    server:
+      no_tls: true
+    client:
+      no_tls: true
+
+global:
+  max:
+    ue: 1024
+
+bsf:
+    sbi:
+      server:
+        - address: 172.22.0.29
+          port: 7777
+      client:
+        nrf:
+          - uri: http://172.22.0.12:7777
+        scp:
+          - uri: http://172.22.0.35:7777
