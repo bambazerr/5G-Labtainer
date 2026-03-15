@@ -6,10 +6,14 @@ Basic Open5GS deployment.
 ## 5g-lab-edge-slicing : 
 Edge slicing with dual UPF architecture.
 
-C'est deux lab different, donc il faut utiliser l'un des dossier pour reprendre un lab sur labtainer.
+### Méthode pour reprendre les labs sur labtainer :
+
+C'est deux labs differents, donc il faut utiliser l'un des dossier pour reprendre un lab sur labtainer.
 
 A déplacer sur cd ~/labtainer/trunk/labs/
-
+```
+Attention ! les binaires sys.tar n'ont pas été pushés car c'est trop lourd, donc les dossiers labs ne sont pas completes ici (la version complète des labs est dispo uniquement en .tgz avec moi en local).
+```
 # Documentation Technique : Déploiement du TP 5G (Open5GS + UERANSIM) sur Labtainer
 
 # 1. Vue d’ensemble : Comment le TP est rendu possible ?
