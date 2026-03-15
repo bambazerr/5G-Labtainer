@@ -12,7 +12,15 @@ C'est deux labs differents, donc il faut utiliser l'un des dossier pour reprendr
 
 A déplacer sur cd ~/labtainer/trunk/labs/
 ```
-Attention ! les binaires sys.tar n'ont pas été pushés car c'est trop lourd, donc les dossiers labs ne sont pas completes ici (la version complète des labs est dispo uniquement en .tgz avec moi en local).
+Attention ! les binaires sys.tar n'ont pas été pushés car c'est trop lourd, 
+
+donc les dossiers labs ne sont pas completes ici (la version complète des labs est dispo uniquement en .tgz avec moi en local).
+
+A télécharger directement sur :
+
+5g-lab-edge-slicing : https://drive.google.com/file/d/1ng4o8cbBZx1Nc04lsIudd7erZLWvhsVE/view?usp=drive_link 
+
+5g-lab : https://drive.google.com/file/d/1nuDbu-TW4K-jzWbx2dr3M_G_y1B5w0p5/view?usp=drive_link
 ```
 # Documentation Technique : Déploiement du TP 5G (Open5GS + UERANSIM) sur Labtainer
 
