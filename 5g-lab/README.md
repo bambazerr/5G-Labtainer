@@ -1,182 +1,100 @@
-# 5G-labtainer_AMICMA5G
-
-# Documentation Technique : Déploiement du TP 5G (Open5GS + UERANSIM) sur Labtainer
-
-# 1. Vue d’ensemble : Comment le TP est rendu possible ?
-
-Le TP 5G repose sur :
-
-1. **Labtainer** (orchestrateur pédagogique)
-2. **Docker** (virtualisation par conteneurs)
-3. **Open5GS** (5G Core)
-4. **UERANSIM** (gNB + UE)
-
-Le TP repose sur **Docker comme moteur de conteneurisation**.  
-Toutefois, l’orchestration n’est **pas réalisée via Docker Compose**, mais via **Labtainer**, qui automatise :
-
-- La création des conteneurs
-- La création des réseaux virtuels
-- L’attribution d’IP statiques
-- L’injection des ressources système via `start.config`
+[TP 5G Guide PDF](Lab1-5G_network/5G-lab.pdf.pdf)
 
 
-# 2. Création du Lab
+# 5G Lab 1 - Open5GS and UERANSIM
 
-## Installation de l’environnement
+## Objective
+Become familiar with the operation of a 5G network, from the attachment process of a User Equipment (UE) to data transmission.
+## Prerequisites
+- **Labtainer** must be installed and configured, as the lab is entirely executed in this environment.
+- Download the project '5g-lab.tgz" and install in Labtainer.
+## Lab Architecture  
+- **5G CORE**: Open5GS deployed across several containers representing AMF, SMF, UPF, AUSF, UDM, UDR, PCF, BSF, SCP, and NRF.  
+- **5G RAN**: One gNB container plus UE containers (**ue1**, **ue2**) simulated using **UERANSIM**.  
+- **Subscriber**: A container including MongoDB for managing subscribers and a WebUI interface for adding new ones.
 
-Installer l’image Labtainer dans une machine virtuelle.
+## Steps to Follow
 
-Lien officiel :  
-https://nps.edu/web/c3o/virtual-machine-images
-
-
-## Création du projet
-
-Tous les labs se trouvent dans :
-/labtainer/trunk/labs/
-Créer un nouveau lab :
+### 1. Launch the Lab  
+From Labtainer:
 ```
-newlab 5g-lab
+rebuild.py 5g-lab
 ```
-Ensuite créer le dossier des conteneurs nécessaires :
-mkdir amf, mkdir smf, mkdir upf, mkdir gnb, mkdir ue1
+Three terminals will open: CORE, RAN, and Subscriber.
 
-# 3. Création de l’architecture réseau virtuelle
+### 2. Add a Subscriber
 
-Le fichier principal est :
+From the Subscriber container, open Firefox and connect to the WebUI:
+http://172.22.0.2:9999
 
-/labtainer/trunk/labs/5g-lab/config/start.config
-Définition des réseaux :
+Utilisateur : admin
+
+Mot de passe : 1423
 ```
-NETWORK CORE
-    MASK 172.22.0.0/24
-    GATEWAY 172.22.0.101
-
-NETWORK RAN
-    MASK 172.25.0.0/24
-    GATEWAY 172.25.0.101
+Add a subscriber for ue1 and ue2 using the provided IMSI/K/OP information.
+You can also check the configuration files:
 ```
-Labtainer crée ces réseaux comme des bridges Docker internes.
+/ueransim/config/open5gs-ue1.yaml
 
-CORE → réseau 5G Core
-
-RAN → réseau radio simulé
-# 4. Définition des conteneurs
-
-Dans start.config, les conteneurs sont configurer comme suit :
-
-CONTAINER amf
-    USER ubuntu
-    CORE 172.22.0.10
-    TERMINAL_GROUP CORE
-    TERMINALS 1
-    X11 YES
-    ADD-HOST CORE
-
-Même principe pour : smf, upf, nrf, udm, udr, ausf, pcf, bsf, scp, gnb, ue1, ue2
-
-Labtainer traduit cela en :
-
-- Création d’un conteneur Docker
-
-- Attribution IP statique
-
-- Connexion au réseau défini
-
-# 5. Construction des images Docker
-
-Les Dockerfiles se trouvent dans :
-
-/labtainer/trunk/labs/5g-lab/dockerfiles/
-
-Le Dockerfile :
-
-- Installe les paquets nécessaires
-
-- Ajoute les fichiers système
-
-- Définit la commande de démarrage
-
-# 6. Installation du 5G Core (Open5GS)
-**** Principe
-
-Open5GS n’est pas compilé dans chaque conteneur.
-Il est intégré sous forme binaire via le mécanisme sys_tar.
-
-## a. Préparation du binaire
-
-Extraction : tar xfz /mnt/hgfs/Documents/5GS.tgz
-
-Dossier généré : open5gs/
-
-## b. Création d’une archive unique
-tar cvf open5gs.tar open5gs
-
-## c. Injection via sys_tar
-
-Chaque conteneur Core contient : sys_tar/
-
-Labtainer utilise : sys_tar/sys.tar
-
-Exemple pour SMF :
+/ueransim/config/open5gs-ue2.yaml
 ```
-cd smf/sys_tar/
-rm sys.tar
-ln ../../open5gs.tar sys.tar
+### 3. Start Wireshark
+
+From the gNB container:
+wireshark
+
+
+Select the any interface, start the capture, and apply the filter:
+
+Filtrer avec : rls.message_type=4 and rls.message_type=5 and ipv6
+
+### 4. Simulate a UE
+
+In the ue1 and ue2 containers:
 ```
+sudo /ueransim/bin/nr-ue -c /ueransim/config/open5gs-ue1.yaml&
 
-Même opération pour les autres conteneurs (les fonctions open5gs)
-
-Open5GS est alors disponible dans : /open5gs/install/
-
-# 7. Déploiement UERANSIM (RAN simulé)
-
-UERANSIM permet d’émuler :
-
-- Un gNB
-
-- Un ou plusieurs UE
-
-## a. Injection via sys_tar
-
-Archive utilisée : ueransim.tar
-Injection :
+sudo /ueransim/bin/nr-ue -c /ueransim/config/open5gs-ue2.yaml&
 ```
-cd ue1/sys_tar/
-rm sys.tar
-cp ~/labtainer/trunk/labs/5g-lab/ueransim.tar sys.tar
-```
-## b. Fichiers de configuration
+### 5. Configure the User Tunnel
 
-Stockés dans : labs/5g-lab/ueransim/config/
+Replace X with the dynamically assigned IP address of the UE:
+```
+sudo ip route add 192.168.100.1 via 192.168.100.X dev uesimtun0
+sudo route add default gw 192.168.100.X
+```
+### 6. Test Connectivity
 
-Copie vers les conteneurs :
+From ue1 or ue2:
 ```
-docker cp ~/labtainer/trunk/labs/5g-lab/ueransim/config/open5gs-gnb.yaml \
-5g-lab.gnb.student:/ueransim/config/open5gs-gnb.yaml
+ping -I uesimtun0 192.168.100.1
+ping -I uesimtun0 google.com
+```
+### 7. Analyze Exchanges in Wireshark
 
-docker cp ~/labtainer/trunk/labs/5g-lab/ueransim/config/open5gs-ue.yaml \
-5g-lab.ue1.student:/ueransim/config/open5gs-ue.yaml
-```
-## c. Vérification
-```
-docker exec -it 5g-lab.gnb.student cat /ueransim/config/open5gs-gnb.yaml
-docker exec -it 5g-lab.ue1.student cat /ueransim/config/open5gs-ue.yaml
-```
-## d. Redémarrage
-docker restart 5g-lab.gnb.student
+Check the following messages:
 
-# Basic Git Commands
+- [ Registration Request / Accept] 
 
-If you are working from your local machine, here are the basic commands to update the remote repository:
-```
-cd existing_repo
-git remote add origin https://gitlab.emse.fr/khadim.ba/5G-labtainer_AMICMA5G.git
-git branch -M main
-git push -uf origin main
-```
-# Auteurs
+- [Authentication Request / Response ] 
+
+- [ Security Mode Command / Complete] 
+
+- [PDU Session Establishment ] 
+
+
+## Files and Documents
+
+5G-lab.pdf
+5G-lab.tgz
+
+
+## Authors
+
 Khadim BA, Philippe JAILLON
 
-# Statut du projet
-En cours de development
+## Remarks
+
+This lab is executed only within the Labtainer environment.
+All scripts and services are preconfigured.
+The goal is to observe and understand the interactions between the core network, gNB, and UEs.
