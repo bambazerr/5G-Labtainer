@@ -1,3 +1,0 @@
-#!/bin/bash
-sudo pkill nr-ue
-echo "UE stopped"
