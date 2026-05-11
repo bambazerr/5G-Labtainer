@@ -1,0 +1,7 @@
+#!/bin/bash
+
+echo "======================================"
+echo "      Starting Industrial PLC"
+echo "======================================"
+
+pymodbus.simulator --json_file PLC.json

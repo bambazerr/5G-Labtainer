@@ -1,0 +1,2 @@
+#sudo tc qdisc add dev ogstun root netem delay 15m
+#tc qdisc show dev ogstun 

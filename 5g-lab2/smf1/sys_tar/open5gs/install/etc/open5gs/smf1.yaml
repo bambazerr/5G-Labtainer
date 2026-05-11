@@ -1,0 +1,71 @@
+logger:
+    file: /open5gs/install/var/log/open5gs/smf.log
+
+sbi:
+    server:
+      no_tls: true
+    client:
+      no_tls: true
+
+parameter:
+    no_ipv4v6_local_addr_in_packet_filter: true
+
+smf:
+    freeDiameter: /open5gs/install/etc/freeDiameter/smf.conf
+    info:
+      - s_nssai:
+          - sst: 1
+            sd: 000001
+            dnn:
+              - cloud
+    sbi:
+      - addr: 172.22.0.7
+        port: 7777
+    gtpc:
+      - addr: 172.22.0.7
+    gtpu:
+      - addr: 172.22.0.7
+    pfcp:
+      - addr: 172.22.0.7
+    subnet:
+      - addr: 10.0.100.1/24
+        dnn: cloud
+        dev: ogstun
+      - addr: 2001:230:cafe::1/48
+        dev: ogstun
+        dnn: cloud
+      #- addr: UE_IPV4_IMS_TUN_IP
+       # dnn: ims
+       # dev: ogstun2
+      #- addr: 2001:230:babe::1/48
+       # dnn: ims
+        #dev: ogstun2
+    dns:
+      - 192.168.110.1
+      - 192.168.110.1
+      - 2001:4860:4860::8888
+      - 2001:4860:4860::8844
+    p-cscf:
+      - 172.22.0.21
+    mtu: 1450
+    metrics:
+      - addr: 172.22.0.7
+        port: 9091
+
+scp:
+    sbi:
+      - addr:
+          - 172.22.0.35
+        port: 7777
+
+nrf:
+    sbi:
+      - addr:
+          - 172.22.0.12
+        port: 7777
+
+upf:
+    pfcp:
+      - addr: 172.22.0.8
+        dnn: cloud
+

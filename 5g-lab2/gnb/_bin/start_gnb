@@ -1,0 +1,25 @@
+#!/bin/bash
+
+LOGFILE=$HOME/gnb.log
+PCAPFILE=$HOME/ran.pcap
+
+echo "======================================"
+echo "        STARTING 5G gNB "
+echo "======================================"
+
+# 🟢 1. gNB totalement isolé (IMPORTANT)
+sudo nohup setsid /ueransim/bin/nr-gnb \
+  -c /ueransim/config/open5gs-gnb.yaml \
+  > "$LOGFILE" 2>&1 < /dev/null &
+
+GNB_PID=$!
+
+echo "gNB PID: $GNB_PID"
+echo ""
+echo "gNB is starting..."
+sleep 2
+echo ""
+echo "===== gNB Logs (tail -f $LOGFILE) ====="
+tail -n 20 $LOGFILE
+echo ""
+

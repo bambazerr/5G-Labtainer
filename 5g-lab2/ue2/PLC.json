@@ -1,0 +1,71 @@
+{
+    "server_list": {
+        "server": {
+            "comm": "tcp",
+            "host": "0.0.0.0",
+            "port": 502,
+            "ignore_missing_slaves": false,
+            "framer": "socket",
+            "identity": {
+                "VendorName": "pymodbus",
+                "ProductCode": "PM",
+                "VendorUrl": "https://github.com/pymodbus-dev/pymodbus/",
+                "ProductName": "pymodbus Server",
+                "ModelName": "pymodbus Server",
+                "MajorMinorRevision": "3.1.0"
+            }
+        }
+    },
+    "device_list": {
+        "device": {
+            "setup": {
+                "co size": 31,
+                "di size": 31,
+                "hr size": 31,
+                "ir size": 31,
+                "shared blocks": true,
+                "type exception": true,
+                "defaults": {
+                    "value": {
+                        "bits": 0,
+                        "uint16": 0,
+                        "uint32": 0,
+                        "float32": 0.0,
+                        "string": " "
+                    },
+                    "action": {
+                        "bits": null,
+                        "uint16": null,
+                        "uint32": null,
+                        "float32": null,
+                        "string": null
+                    }
+                }
+            },
+            "invalid": [
+		    [0,3],[25,29] 
+            ],
+            "write": [
+		    [4,20]
+            ],
+            "bits": [
+                {"addr": 0, "value": 43690},
+                {"addr": 1, "value": 21845},
+                {"addr": [4,5], "value": 15}
+
+            ],
+            "uint16": [
+                {"addr": [6,20], "value": 0, "action": null},
+                {"addr": [21,24], "value": 0, "action": "increment"}
+            ],
+            "uint32": [
+            ],
+            "float32": [
+            ],
+            "string": [
+            ],
+            "repeat": [
+            ]
+        }
+    }
+}

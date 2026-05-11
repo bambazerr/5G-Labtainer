@@ -1,0 +1,42 @@
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+#( 
+	# Démarrage de MongoDB
+#	mkdir -p /data/db; /usr/bin/mongod --dbpath /data/db/ --bind_ip 0.0.0.0 > /var/log/mongo.log 2>&1 & 
+	# Démarrage de WebUI Open5GS
+#	cd /open5gs/webui; /usr/bin/npm run dev > /var/log/webui.log 2>&1 & 
+
+#        # Démarrage de Prometheus
+#        /usr/local/bin/prometheus --config.file=/etc/prometheus/prometheus.yml > /var/log/prometheus.log 2>&1 &#
+
+#        # Démarrage de Grafana
+#        service grafana-server start
+#)
+
+
+# Démarrer MongoDB
+mkdir -p /data/db
+/usr/bin/mongod --dbpath /data/db/ --bind_ip 0.0.0.0 > /var/log/mongo.log 2>&1 &
+
+# Attendre que MongoDB soit prêt
+sleep 5
+
+# Exécuter le script pour ajouter les abonnés
+mongosh open5gs --file /root/init.js
+
+# Démarrer le WebUI
+cd /open5gs/webui
+/usr/bin/npm run dev > /var/log/webui.log 2>&1 &
+
+exit 0
