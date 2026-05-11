@@ -3,7 +3,7 @@
 ## 5g-lab : 5G network Deployment
 Basic Open5GS deployment.
 
-## 5g-lab-edge-slicing : 
+## 5g-lab2 : 
 Edge slicing with dual UPF architecture.
 
 ### Méthode pour reprendre les labs sur labtainer :
@@ -14,13 +14,9 @@ A déplacer sur cd ~/labtainer/trunk/labs/
 ```
 Attention ! les binaires sys.tar n'ont pas été pushés car c'est trop lourd, 
 
-donc les dossiers labs ne sont pas completes ici (la version complète des labs est dispo uniquement en .tgz avec moi en local).
+donc les dossiers labs ne sont pas completes ici (la version complète des labs est dispo uniquement en .tgz).
 
-A télécharger directement sur :
-
-5g-lab-edge-slicing : https://drive.google.com/file/d/1ng4o8cbBZx1Nc04lsIudd7erZLWvhsVE/view?usp=drive_link 
-
-5g-lab : https://drive.google.com/file/d/1nuDbu-TW4K-jzWbx2dr3M_G_y1B5w0p5/view?usp=drive_link
+Télécharger 5g-lab2.tgz et installer le sur labtainer
 ```
 # Documentation Technique : Déploiement du TP 5G (Open5GS + UERANSIM) sur Labtainer
 
