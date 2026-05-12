@@ -1,245 +1,280 @@
 # 5G-labtainer_AMICMA5G
 
-## 5g-lab : 5G network Deployment
+## 5g-lab : 5G network Deployment  
 Basic Open5GS deployment.
 
-## 5g-lab2 : 
+## 5g-lab2 :  
 Edge slicing with dual UPF architecture.
 
-### Méthode pour reprendre les labs sur labtainer :
+### Method to run labs on Labtainer :
 
-C'est deux labs differents, donc il faut utiliser l'un des dossier pour reprendre un lab sur labtainer.
+These are two different labs, so you must use one of the folders to run a lab in Labtainer.
 
-A déplacer sur cd ~/labtainer/trunk/labs/
+To move into lab directory:
 ```
-Attention ! les binaires sys.tar n'ont pas été pushés car c'est trop lourd, 
 
-donc les dossiers labs ne sont pas completes ici (la version complète des labs est dispo uniquement en .tgz).
+cd ~/labtainer/trunk/labs/
 
-Télécharger 5g-lab2.tgz et installer le sur labtainer
 ```
-# Documentation Technique : Déploiement du TP 5G (Open5GS + UERANSIM) sur Labtainer
 
-# 1. Vue d’ensemble : Comment le TP est rendu possible ?
+Note:
+The sys.tar binaries are not pushed because they are too large.
 
-Le TP 5G repose sur :
+So the lab folders are not complete in this repository (full version is only available in `.tgz` files).
 
-1. **Labtainer** (orchestrateur pédagogique)
-2. **Docker** (virtualisation par conteneurs)
-3. **Open5GS** (5G Core)
-4. **UERANSIM** (gNB + UE)
+Download `5g-lab2.tgz` and install it on Labtainer.
 
-Le TP repose sur **Docker comme moteur de conteneurisation**.  
+---
 
-Points essentiels du déploiement 5g sur Labtainer
+# Technical Documentation: 5G lab Deployment (Open5GS + UERANSIM) on Labtainer
 
-### Création du lab (newlab 5g-lab)
+# 1. Overview: How the lab is made possible
 
-### Création des conteneurs (amf, smf, upf, gnb, ue, etc.)
+The 5G TP is based on:
 
-### Configuration réseau et architecture via start.config
+1. Labtainer (educational orchestrator)
+2. Docker (container virtualization)
+3. Open5GS (5G Core)
+4. UERANSIM (gNB + UE simulator)
 
-### Construction des images via les Dockerfile
+The TP relies on Docker as container engine.
 
-### Injection des binaires (Open5GS / UERANSIM) via sys.tar
+Key points:
 
-### Démarrage automatique des services via rc.local
+- Creation of lab (newlab 5g-lab)
+- Creation of containers (amf, smf, upf, gnb, ue, etc.)
+- Network configuration via start.config
+- Docker image build via Dockerfiles
+- Binary injection via sys.tar
+- Automatic startup via rc.local
 
+---
 
-# 2. Création du Lab
+# 2. Lab creation
 
-## Installation de l’environnement
+## Install Labtainer VM
 
-Installer l’image Labtainer dans une machine virtuelle.
-
-Lien officiel :  
+Use official image:
 https://nps.edu/web/c3o/virtual-machine-images
 
+## Create lab
 
-## Création du projet
-
-Tous les labs se trouvent dans :
-/labtainer/trunk/labs/
-Créer un nouveau lab :
 ```
+
 newlab 5g-lab
+
 ```
-Ensuite créer le dossier des conteneurs nécessaires :
- new_lab_setup.py -a amf et faire pareil pour les autres conteneurs.
 
-# 3. Création de l’architecture réseau virtuelle
+Then create containers:
+```
 
-Le fichier principal est :
+new_lab_setup.py -a amf
+
+```
+
+(do the same for others)
+
+---
+
+# 3. Virtual network architecture
+
+File:
+```
 
 /labtainer/trunk/labs/5g-lab/config/start.config
-Définition des réseaux :
+
 ```
+
+Example:
+```
+
 NETWORK CORE
-    MASK 172.22.0.0/24
-    GATEWAY 172.22.0.101
+MASK 172.22.0.0/24
+GATEWAY 172.22.0.101
 
 NETWORK RAN
-    MASK 172.25.0.0/24
-    GATEWAY 172.25.0.101
+MASK 172.25.0.0/24
+GATEWAY 172.25.0.101
+
 ```
-Labtainer crée ces réseaux comme des bridges Docker internes.
 
-CORE → réseau 5G Core
+CORE → 5G Core network  
+RAN → Radio Access Network
 
-RAN → réseau radio simulé
-# 4. Définition des conteneurs
+---
 
-Dans start.config, les conteneurs sont configurer comme suit :
+# 4. Containers definition
+
+Example:
+
+```
 
 CONTAINER amf
-    USER ubuntu
-    CORE 172.22.0.10
-    TERMINAL_GROUP CORE
-    TERMINALS 1
-    X11 YES
-    ADD-HOST CORE
+USER ubuntu
+CORE 172.22.0.10
+TERMINAL_GROUP CORE
+TERMINALS 1
+X11 YES
+ADD-HOST CORE
 
-Même principe pour : smf, upf, nrf, udm, udr, ausf, pcf, bsf, scp, gnb, ue1, ue2
+```
 
-Labtainer traduit cela en :
+Same for:
+smf, upf, nrf, udm, udr, ausf, pcf, bsf, scp, gnb, ue1, ue2
 
-- Création d’un conteneur Docker
+---
 
-- Attribution IP statique
+# 5. Docker image build
 
-- Connexion au réseau défini
-
-# 5. Construction des images Docker
-
-Les Dockerfiles se trouvent dans :
+Dockerfiles location:
+```
 
 /labtainer/trunk/labs/5g-lab/dockerfiles/
 
-Le Dockerfile :
+```
 
-- Installe les paquets nécessaires
+They:
+- install dependencies
+- copy system files
+- define startup commands
 
-- Ajoute les fichiers système
+---
 
-- Définit la commande de démarrage
+# 6. Open5GS installation (5G Core)
 
-# 6. Installation du 5G Core (Open5GS)
-**** Principe
+## Principle
 
-Open5GS n’est pas compilé dans chaque conteneur.
-Il est intégré sous forme binaire via le mécanisme sys_tar.
+Open5GS is not compiled per container.  
+It is injected using sys.tar.
 
-## a. Préparation du binaire
+## a. Extract binaries
 
-Extraction : tar xfz /mnt/hgfs/Documents/5GS.tgz
+```
 
-Dossier généré : open5gs/
+tar xfz /mnt/hgfs/Documents/5GS.tgz
 
-## b. Création d’une archive unique
+```
+
+## b. Create archive
+
+```
+
 tar cvf open5gs.tar open5gs
 
-## c. Injection via sys_tar
-
-Chaque conteneur Core contient : sys_tar/
-
-Labtainer utilise : sys_tar/sys.tar
-
-Exemple pour SMF :
 ```
+
+## c. Inject into containers
+
+Example (SMF):
+
+```
+
 cd smf/sys_tar/
 rm sys.tar
 ln ../../open5gs.tar sys.tar
+
 ```
 
-Même opération pour les autres conteneurs (les fonctions open5gs)
-
-Open5GS est alors disponible dans : /open5gs/install/
-
-# 7. Déploiement UERANSIM (RAN simulé)
-
-UERANSIM permet d’émuler :
-
-- Un gNB
-
-- Un ou plusieurs UE
-
-## a. Injection via sys_tar
-
-Archive utilisée : ueransim.tar
-Injection :
+Open5GS will be available in:
 ```
+
+/open5gs/install/
+
+```
+
+---
+
+# 7. UERANSIM deployment
+
+## a. Inject sys.tar
+
+```
+
 cd ue1/sys_tar/
 rm sys.tar
 cp ~/labtainer/trunk/labs/5g-lab/ueransim.tar sys.tar
+
 ```
-## b. Fichiers de configuration
 
-Stockés dans : labs/5g-lab/ueransim/config/
+## b. Config files
 
-Copie vers les conteneurs :
+Location:
 ```
-docker cp ~/labtainer/trunk/labs/5g-lab/ueransim/config/open5gs-gnb.yaml \
-5g-lab.gnb.student:/ueransim/config/open5gs-gnb.yaml
 
-docker cp ~/labtainer/trunk/labs/5g-lab/ueransim/config/open5gs-ue.yaml \
-5g-lab.ue1.student:/ueransim/config/open5gs-ue.yaml
+labs/5g-lab/ueransim/config/
+
 ```
-# 8. Automatisation du démarrage via rc.local
 
-Dans le TP 5G sous Labtainer, le fichier rc.local joue un rôle essentiel :
+Copy to containers:
 
-il permet de lancer automatiquement les services 5G au démarrage du conteneur.
-
-Labtainer utilise le fichier : 
 ```
+
+docker cp open5gs-gnb.yaml gnb:/ueransim/config/
+docker cp open5gs-ue.yaml ue1:/ueransim/config/
+
+```
+
+---
+
+# 8. Automation via rc.local
+
+File:
+```
+
 /etc/rc.local
-```
-est exécuté automatiquement au boot du conteneur.
 
-Dans la structure Labtainer :
 ```
-5g-lab/
- ├── amf/
- │    └── _system/
- │         └── etc/
- │              └── rc.local
-```
-Chaque conteneur (amf, smf, upf, etc.) possède son propre rc.local.
 
-Rendre rc.local exécutable
+Make executable:
+
 ```
+
 chmod +x /etc/rc.local
+
 ```
-Exemple rc.local AMF :
+
+Example AMF:
+
 ```
+
 wait_for () {
-        for S in $*
-        do
-                S=`echo $S | tr ":" " "`
-                while( ! (perl -e 'print "PRI * HTTP/2.0\r\n\r\n"' | nc -N $S) ) ; do sleep 1; done;
-        done
+for S in $*
+do
+S=`echo $S | tr ":" " "`
+while !(perl -e 'print "PRI * HTTP/2.0\r\n\r\n"' | nc -N $S) ; do sleep 1; done;
+done
 }
 
-( 
-        #wait_for ausf:7777 udm:7777 udr:7777 pcf:7777 bsf:7777
-        wait_for nrf:7777 nssf:7777
-        H=`hostname`; cd /open5gs/install/bin; ./open5gs-${H}d > /var/log/$H.log 2>&1 & 
+(
+wait_for nrf:7777 nssf:7777
+H=`hostname`
+cd /open5gs/install/bin
+./open5gs-${H}d > /var/log/$H.log 2>&1 &
 )
 
 exit 0
 
 ```
-# Basic Git Commands
 
-If you are working from your local machine, here are the basic commands to update the remote repository:
+---
+
+# Git commands
+
 ```
+
 cd existing_repo
-git remote add origin https://gitlab.emse.fr/khadim.ba/5G-labtainer_AMICMA5G.git
+git remote add origin [https://gitlab.emse.fr/khadim.ba/5G-labtainer_AMICMA5G.git]
 git branch -M main
 git push -uf origin main
+
 ```
-# Auteurs
+
+---
+
+# Authors
 Khadim BA, Philippe JAILLON
 
-# Statut du projet
-En cours de development
+# Project status
+In development
+```
+
