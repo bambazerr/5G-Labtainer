@@ -22,7 +22,7 @@ The sys.tar binaries are not pushed because they are too large.
 
 So the lab folders are not complete in this repository (full version is only available in `.tgz` files).
 
-Download `5g-lab2.tgz` and install it on Labtainer.
+Youve have to Download `5g-lab2.tgz` and install it on Labtainer. 
 
 ---
 [Laboratory User Manual PDF](Manuel d'utilisation du lab.pdf)
