@@ -32,7 +32,7 @@ Download `5g-lab2.tgz` and install it on Labtainer.
 ```
 
 cd existing_repo
-git remote add origin [https://gitlab.emse.fr/khadim.ba/5G-labtainer_AMICMA5G.git]
+git remote add origin https://github.com/bambazerr/5G-Labtainer.git
 git branch -M main
 git push -uf origin main
 
