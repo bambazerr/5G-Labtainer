@@ -42,6 +42,7 @@ git push -uf origin main
 
 # Authors
 Khadim BA, Philippe JAILLON
+Ecole des mines Saint Etienne
 
 # Project status
 In development
